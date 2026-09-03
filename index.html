@@ -68,7 +68,7 @@
         <!-- 內容顯示區 -->
         <main class="flex-1 overflow-y-auto p-4 md:p-8">
             
-            <!-- 【訓練師】課程列表頁 -->
+            <!-- 【訓練師】課程列表頁 (卡片無金額、無外連按鈕) -->
             <div id="page-courses" class="hidden-view max-w-7xl mx-auto">
                 <div class="flex flex-col md:flex-row justify-between items-start md:items-end mb-6 gap-4">
                     <h2 class="text-2xl font-bold text-gray-800 border-l-4 border-[#003D79] pl-3">進修課程公告總覽</h2>
@@ -77,7 +77,7 @@
                 <div id="course-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"></div>
             </div>
 
-            <!-- 【訓練師】課程詳細資訊頁 -->
+            <!-- 【訓練師】課程詳細資訊頁 (超連結支援、金額在左、費用說明在右) -->
             <div id="page-detail" class="hidden-view max-w-5xl mx-auto">
                 <button onclick="switchPage('page-courses')" class="text-[#003D79] font-bold mb-4 hover:underline">← 返回課程總覽</button>
                 <div class="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
@@ -85,7 +85,7 @@
                         <div>
                             <span id="detail-category" class="bg-blue-200 text-[#003D79] text-xs font-bold px-2 py-1 rounded mb-2 inline-block"></span>
                             
-                            <!-- 課程名稱與外部跳轉按鈕 -->
+                            <!-- 課程名稱與超連結跳轉按鈕 -->
                             <div class="flex flex-col sm:flex-row sm:items-center gap-3 mb-2">
                                 <a id="detail-title-link" href="#" target="_blank" rel="noopener noreferrer" class="text-2xl font-bold text-gray-800 transition">
                                     <span id="detail-title"></span>
@@ -116,7 +116,7 @@
                             <div><p class="font-bold text-gray-700 mb-1">課程時數</p><p id="detail-hours" class="text-gray-600"></p></div>
                             <div><p class="font-bold text-gray-700 mb-1">備註</p><p id="detail-note" class="text-orange-600 whitespace-pre-line"></p></div>
                             
-                            <!-- 金額居左、費用說明居右 -->
+                            <!-- 金額在左、費用說明在右 -->
                             <div class="border-t pt-3">
                                 <p class="font-bold text-gray-700 mb-1">金額</p>
                                 <p id="detail-fee" class="text-red-600 font-bold text-lg"></p>
@@ -153,7 +153,7 @@
                 </div>
             </div>
 
-            <!-- 【分署窗口】分署報名審核頁 (新增管理員核定進度欄) -->
+            <!-- 【分署窗口】分署報名審核頁 (含管理員核定進度) -->
             <div id="page-branch-dash" class="hidden-view max-w-6xl mx-auto">
                 <h2 class="text-2xl font-bold text-gray-800 border-l-4 border-green-600 pl-3 mb-6">分署報名審核與管理 (僅顯示：中彰投分署)</h2>
                 <div class="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
@@ -202,10 +202,10 @@
                     <div class="flex flex-wrap items-center gap-3">
                         <div class="flex items-center gap-2 bg-green-50 p-2.5 rounded-lg border border-green-200 shadow-sm">
                             <label for="excel-upload" class="cursor-pointer bg-green-600 text-white px-5 py-2 rounded font-bold hover:bg-green-700 flex items-center gap-2 transition">
-                                <span>📥 匯入 Excel 課程資料 (自動覆蓋)</span>
+                                <span>📥 匯入 Excel 課程資料 (手動覆蓋)</span>
                             </label>
                             <input type="file" id="excel-upload" accept=".xlsx, .xls" class="hidden" onchange="handleExcelUpload(event)">
-                            <span id="upload-status" class="text-sm text-green-700 font-medium ml-2">尚未匯入</span>
+                            <span id="upload-status" class="text-sm text-green-700 font-medium ml-2">檢查雲端預設資料中...</span>
                         </div>
                         <button onclick="clearAllData()" class="bg-gray-200 text-gray-700 hover:bg-red-100 hover:text-red-700 px-4 py-2.5 rounded-lg font-bold text-sm transition flex items-center gap-1 border border-gray-300">
                             🗑️ 清空所有資料 (含報名紀錄)
@@ -216,7 +216,7 @@
                     <table class="w-full text-left text-sm">
                         <thead class="bg-gray-100"><tr><th class="p-4">序號</th><th class="p-4">課程名稱</th><th class="p-4">辦理單位</th><th class="p-4">費用(原價)</th><th class="p-4">外部連結狀態</th></tr></thead>
                         <tbody id="admin-courses-tbody" class="divide-y divide-gray-200">
-                            <tr><td colspan="5" class="p-8 text-center text-gray-500">請點擊上方按鈕匯入 Excel 資料</td></tr>
+                            <tr><td colspan="5" class="p-8 text-center text-gray-500">載入中...</td></tr>
                         </tbody>
                     </table>
                 </div>
@@ -256,10 +256,6 @@
                 const savedRegs = localStorage.getItem('TRAINING_REGS');
                 if (savedCourses) {
                     DB.courses = JSON.parse(savedCourses);
-                    const statusEl = document.getElementById('upload-status');
-                    if (statusEl && DB.courses.length > 0) {
-                        statusEl.innerText = `✅ 目前已有 ${DB.courses.length} 筆課程 (重傳將自動覆蓋)`;
-                    }
                 }
                 if (savedRegs) {
                     DB.registrations = JSON.parse(savedRegs);
@@ -286,7 +282,7 @@
                 renderMyRecords();
                 renderBranchDash();
                 
-                alert("已完全清空！所有課程與報名紀錄均已清除。");
+                alert("已完全清空！");
             }
         }
 
@@ -393,7 +389,160 @@
             return { num: 0, text: str };
         }
 
-        // --- 核心：Excel 匯入解析引擎 ---
+        // --- 核心：共用 Excel 解析引擎 ---
+        function processWorkbookData(workbook, isManualUpload = false) {
+            const worksheet = workbook.Sheets[workbook.SheetNames[0]];
+            const rawData = XLSX.utils.sheet_to_json(worksheet, { header: 1, defval: "" });
+            const range = XLSX.utils.decode_range(worksheet['!ref'] || 'A1');
+
+            let colMap = {
+                title: -1, unit: -1, feeOrigin: -1, feeDesc: -1,
+                date: -1, hours: -1, location: -1, format: -1,
+                category: -1, target: -1, prereq: -1, goal: -1,
+                outline: -1, note: -1, link: -1
+            };
+            
+            let dataStartRow = 1;
+
+            for (let i = 0; i < Math.min(rawData.length, 10); i++) {
+                const row = rawData[i];
+                if (!row || !Array.isArray(row)) continue;
+                
+                let hasTitleHeader = row.some(cell => String(cell || '').replace(/\s+/g, '').includes('課程名稱'));
+                if (hasTitleHeader) {
+                    dataStartRow = i + 1;
+                    row.forEach((cell, colIdx) => {
+                        if (cell === undefined || cell === null) return;
+                        let t = String(cell).replace(/[\s\n\r\t ]/g, '').replace(/（/g, '(').replace(/）/g, ')');
+                        if (t === '') return;
+                        
+                        if (t.includes('課程名稱')) colMap.title = colIdx;
+                        else if (t.includes('辦課單位') || t.includes('辦理單位') || t.includes('單位')) {
+                            if (colMap.unit === -1) colMap.unit = colIdx;
+                        }
+                        else if (t.includes('費用說明')) colMap.feeDesc = colIdx;
+                        else if (t.includes('原價') || t.includes('費用(原價)')) colMap.feeOrigin = colIdx;
+                        else if (t === '費用' || t === '金額') {
+                            if (colMap.feeOrigin === -1) colMap.feeOrigin = colIdx;
+                        }
+                        else if (t.includes('預定課程日期') || t.includes('預定日期') || t.includes('課程日期') || t.includes('日期')) {
+                            if (colMap.date === -1) colMap.date = colIdx;
+                        }
+                        else if (t.includes('時數')) colMap.hours = colIdx;
+                        else if (t.includes('上課地點') || t.includes('地點')) colMap.location = colIdx;
+                        else if (t.includes('型態')) colMap.format = colIdx;
+                        else if (t.includes('範疇')) colMap.category = colIdx;
+                        else if (t.includes('學員對象') || (t.includes('對象') && !t.includes('職群'))) colMap.target = colIdx;
+                        else if (t.includes('先備知識')) colMap.prereq = colIdx;
+                        else if (t.includes('訓練目標')) colMap.goal = colIdx;
+                        else if (t.includes('大綱')) colMap.outline = colIdx;
+                        else if (t.includes('備註') && !t.includes('費用')) colMap.note = colIdx;
+                        else if (t.includes('網址') || t.includes('連結') || t.toLowerCase() === 'url') colMap.link = colIdx;
+                    });
+                    break;
+                }
+            }
+
+            if (colMap.title === -1) colMap.title = 9;
+            if (colMap.feeOrigin === -1) colMap.feeOrigin = 5;
+
+            DB.courses = [];
+            let linkCount = 0;
+
+            for (let i = dataStartRow; i < rawData.length; i++) {
+                const row = rawData[i];
+                if (!row || !Array.isArray(row)) continue;
+                
+                const getVal = (cIdx, defaultVal = '') => {
+                    if (cIdx === -1 || row[cIdx] === undefined || row[cIdx] === null) return defaultVal;
+                    const val = String(row[cIdx]).trim();
+                    return val !== '' ? val : defaultVal;
+                };
+
+                const title = getVal(colMap.title);
+                if (!title) continue;
+                if (title === '課程名稱' || title === 'No' || title === '序號') continue;
+                if (title.startsWith('備註') || title.startsWith('註：') || title.startsWith('說明：')) continue;
+
+                let linkUrl = '';
+                const actualRow = range.s.r + i;
+
+                if (colMap.title !== -1) {
+                    const addr = XLSX.utils.encode_cell({ r: actualRow, c: range.s.c + colMap.title });
+                    const cell = worksheet[addr];
+                    if (cell) {
+                        if (cell.l && cell.l.Target) linkUrl = String(cell.l.Target).trim();
+                        else if (cell.f) {
+                            const m = cell.f.match(/HYPERLINK\s*\(\s*["']([^"']+)["']/i);
+                            if (m && m[1]) linkUrl = m[1].trim();
+                        }
+                    }
+                }
+
+                if (!linkUrl && colMap.link !== -1) {
+                    const linkVal = getVal(colMap.link, '');
+                    if (linkVal) linkUrl = linkVal;
+                }
+
+                if (!linkUrl) {
+                    for (let c = 0; c < row.length; c++) {
+                        const addr = XLSX.utils.encode_cell({ r: actualRow, c: range.s.c + c });
+                        const cell = worksheet[addr];
+                        if (cell && cell.l && cell.l.Target) {
+                            linkUrl = String(cell.l.Target).trim();
+                            break;
+                        }
+                    }
+                }
+
+                if (linkUrl) {
+                    if (linkUrl.startsWith('www.')) linkUrl = 'https://' + linkUrl;
+                    linkCount++;
+                }
+
+                const rawDate = getVal(colMap.date);
+                const formattedDate = formatExcelDate(rawDate);
+
+                const rawFeeOrigin = getVal(colMap.feeOrigin, '');
+                const parsedFee = cleanParseFee(rawFeeOrigin);
+
+                let feeDesc = getVal(colMap.feeDesc, '');
+                if (!feeDesc) feeDesc = rawFeeOrigin || '依簡章說明';
+
+                DB.courses.push({
+                    id: DB.courses.length + 1,
+                    title: title,
+                    link: linkUrl,
+                    unit: getVal(colMap.unit, '未提供'),
+                    category: getVal(colMap.category, '專業知能'),
+                    format: getVal(colMap.format, '實體'),
+                    date: formattedDate,
+                    hours: getVal(colMap.hours, '未提供'),
+                    location: getVal(colMap.location, '未提供'),
+                    feeText: feeDesc,
+                    adminFee: parsedFee.text,
+                    rawFeeNum: parsedFee.num,
+                    target: getVal(colMap.target, '無特別限制'),
+                    prereq: getVal(colMap.prereq, '無'),
+                    goal: getVal(colMap.goal, '無'),
+                    outline: getVal(colMap.outline, '無'),
+                    note: getVal(colMap.note, '無')
+                });
+            }
+
+            saveToStorage();
+            const statusEl = document.getElementById('upload-status');
+            if (statusEl) {
+                statusEl.innerText = `✅ 目前已有 ${DB.courses.length} 筆課程 (已就緒)`;
+            }
+            if (isManualUpload) {
+                alert(`🎊 覆蓋成功！共成功載入 ${DB.courses.length} 筆課程資料。\n已偵測到 ${linkCount} 筆含有外部連結。`);
+            }
+            renderAdminCourses();
+            renderCourseGrid();
+        }
+
+        // --- 手動上傳處理 ---
         function handleExcelUpload(event) {
             const file = event.target.files[0];
             if (!file) return;
@@ -403,155 +552,45 @@
                 try {
                     const data = new Uint8Array(e.target.result);
                     const workbook = XLSX.read(data, { type: 'array' });
-                    const worksheet = workbook.Sheets[workbook.SheetNames[0]];
-                    
-                    const rawData = XLSX.utils.sheet_to_json(worksheet, { header: 1, defval: "" });
-                    const range = XLSX.utils.decode_range(worksheet['!ref'] || 'A1');
-
-                    let colMap = {
-                        title: -1, unit: -1, feeOrigin: -1, feeDesc: -1,
-                        date: -1, hours: -1, location: -1, format: -1,
-                        category: -1, target: -1, prereq: -1, goal: -1,
-                        outline: -1, note: -1, link: -1
-                    };
-                    
-                    let dataStartRow = 1;
-
-                    for (let i = 0; i < Math.min(rawData.length, 10); i++) {
-                        const row = rawData[i];
-                        if (!row || !Array.isArray(row)) continue;
-                        
-                        let hasTitleHeader = row.some(cell => String(cell || '').replace(/\s+/g, '').includes('課程名稱'));
-                        if (hasTitleHeader) {
-                            dataStartRow = i + 1;
-                            row.forEach((cell, colIdx) => {
-                                if (cell === undefined || cell === null) return;
-                                let t = String(cell).replace(/[\s\n\r\t ]/g, '').replace(/（/g, '(').replace(/）/g, ')');
-                                if (t === '') return;
-                                
-                                if (t.includes('課程名稱')) colMap.title = colIdx;
-                                else if (t.includes('辦課單位') || t.includes('辦理單位') || t.includes('單位')) {
-                                    if (colMap.unit === -1) colMap.unit = colIdx;
-                                }
-                                else if (t.includes('費用說明')) colMap.feeDesc = colIdx;
-                                else if (t.includes('原價') || t.includes('費用(原價)')) colMap.feeOrigin = colIdx;
-                                else if (t === '費用' || t === '金額') {
-                                    if (colMap.feeOrigin === -1) colMap.feeOrigin = colIdx;
-                                }
-                                else if (t.includes('預定課程日期') || t.includes('預定日期') || t.includes('課程日期') || t.includes('日期')) {
-                                    if (colMap.date === -1) colMap.date = colIdx;
-                                }
-                                else if (t.includes('時數')) colMap.hours = colIdx;
-                                else if (t.includes('上課地點') || t.includes('地點')) colMap.location = colIdx;
-                                else if (t.includes('型態')) colMap.format = colIdx;
-                                else if (t.includes('範疇')) colMap.category = colIdx;
-                                else if (t.includes('學員對象') || (t.includes('對象') && !t.includes('職群'))) colMap.target = colIdx;
-                                else if (t.includes('先備知識')) colMap.prereq = colIdx;
-                                else if (t.includes('訓練目標')) colMap.goal = colIdx;
-                                else if (t.includes('大綱')) colMap.outline = colIdx;
-                                else if (t.includes('備註') && !t.includes('費用')) colMap.note = colIdx;
-                                else if (t.includes('網址') || t.includes('連結') || t.toLowerCase() === 'url') colMap.link = colIdx;
-                            });
-                            break;
-                        }
-                    }
-
-                    if (colMap.title === -1) colMap.title = 9;
-                    if (colMap.feeOrigin === -1) colMap.feeOrigin = 5;
-
-                    DB.courses = [];
-                    let linkCount = 0;
-
-                    for (let i = dataStartRow; i < rawData.length; i++) {
-                        const row = rawData[i];
-                        if (!row || !Array.isArray(row)) continue;
-                        
-                        const getVal = (cIdx, defaultVal = '') => {
-                            if (cIdx === -1 || row[cIdx] === undefined || row[cIdx] === null) return defaultVal;
-                            const val = String(row[cIdx]).trim();
-                            return val !== '' ? val : defaultVal;
-                        };
-
-                        const title = getVal(colMap.title);
-                        if (!title) continue;
-                        if (title === '課程名稱' || title === 'No' || title === '序號') continue;
-                        if (title.startsWith('備註') || title.startsWith('註：') || title.startsWith('說明：')) continue;
-
-                        let linkUrl = '';
-                        const actualRow = range.s.r + i;
-
-                        if (colMap.title !== -1) {
-                            const addr = XLSX.utils.encode_cell({ r: actualRow, c: range.s.c + colMap.title });
-                            const cell = worksheet[addr];
-                            if (cell) {
-                                if (cell.l && cell.l.Target) linkUrl = String(cell.l.Target).trim();
-                                else if (cell.f) {
-                                    const m = cell.f.match(/HYPERLINK\s*\(\s*["']([^"']+)["']/i);
-                                    if (m && m[1]) linkUrl = m[1].trim();
-                                }
-                            }
-                        }
-
-                        if (!linkUrl && colMap.link !== -1) {
-                            const linkVal = getVal(colMap.link, '');
-                            if (linkVal) linkUrl = linkVal;
-                        }
-
-                        if (!linkUrl) {
-                            for (let c = 0; c < row.length; c++) {
-                                const addr = XLSX.utils.encode_cell({ r: actualRow, c: range.s.c + c });
-                                const cell = worksheet[addr];
-                                if (cell && cell.l && cell.l.Target) {
-                                    linkUrl = String(cell.l.Target).trim();
-                                    break;
-                                }
-                            }
-                        }
-
-                        if (linkUrl) {
-                            if (linkUrl.startsWith('www.')) linkUrl = 'https://' + linkUrl;
-                            linkCount++;
-                        }
-
-                        const rawDate = getVal(colMap.date);
-                        const formattedDate = formatExcelDate(rawDate);
-
-                        const rawFeeOrigin = getVal(colMap.feeOrigin, '');
-                        const parsedFee = cleanParseFee(rawFeeOrigin);
-
-                        let feeDesc = getVal(colMap.feeDesc, '');
-                        if (!feeDesc) feeDesc = rawFeeOrigin || '依簡章說明';
-
-                        DB.courses.push({
-                            id: DB.courses.length + 1,
-                            title: title,
-                            link: linkUrl,
-                            unit: getVal(colMap.unit, '未提供'),
-                            category: getVal(colMap.category, '專業知能'),
-                            format: getVal(colMap.format, '實體'),
-                            date: formattedDate,
-                            hours: getVal(colMap.hours, '未提供'),
-                            location: getVal(colMap.location, '未提供'),
-                            feeText: feeDesc,
-                            adminFee: parsedFee.text,
-                            rawFeeNum: parsedFee.num,
-                            target: getVal(colMap.target, '無特別限制'),
-                            prereq: getVal(colMap.prereq, '無'),
-                            goal: getVal(colMap.goal, '無'),
-                            outline: getVal(colMap.outline, '無'),
-                            note: getVal(colMap.note, '無')
-                        });
-                    }
-
-                    saveToStorage();
-                    document.getElementById('upload-status').innerText = `✅ 成功載入 ${DB.courses.length} 筆課程 (已保存)`;
-                    alert(`🎊 覆蓋成功！共成功載入 ${DB.courses.length} 筆課程資料。\n\n已成功偵測到 ${linkCount} 筆含有外部連結，現在點進課程即可直接跳轉！`);
-                    renderAdminCourses();
+                    processWorkbookData(workbook, true);
                 } catch (error) {
                     alert('發生錯誤：' + error.message);
                 }
             };
             reader.readAsArrayBuffer(file);
+        }
+
+        // --- 自動從 GitHub 讀取預設 Excel (任何人開啟網頁自動執行) ---
+        async function autoLoadMasterExcel() {
+            loadFromStorage();
+            
+            // 嘗試自動抓取 GitHub 上的 Excel 檔案
+            const filesToTry = ['courses.xlsx', '115年第3次公開班課程清單v1_2.xlsx'];
+            for (let fname of filesToTry) {
+                try {
+                    const res = await fetch(fname);
+                    if (res.ok) {
+                        const ab = await res.arrayBuffer();
+                        const workbook = XLSX.read(new Uint8Array(ab), { type: 'array' });
+                        processWorkbookData(workbook, false);
+                        console.log(`✅ 成功由雲端自動載入預設課程：${fname}`);
+                        return;
+                    }
+                } catch(e) {
+                    // 繼續嘗試下一個檔名
+                }
+            }
+            
+            // 若雲端檔尚未上傳，則維持 LocalStorage
+            if (DB.courses.length > 0) {
+                const statusEl = document.getElementById('upload-status');
+                if (statusEl) statusEl.innerText = `✅ 目前已有 ${DB.courses.length} 筆課程 (快取載入)`;
+                renderAdminCourses();
+                renderCourseGrid();
+            } else {
+                const statusEl = document.getElementById('upload-status');
+                if (statusEl) statusEl.innerText = `尚未匯入，請上傳 courses.xlsx 到 GitHub`;
+            }
         }
 
         // --- 管理員：後台表格渲染 ---
@@ -574,13 +613,13 @@
             `).join('');
         }
 
-        // --- 訓練師：課程公告總覽 ---
+        // --- 訓練師：課程公告總覽 (卡片乾淨無金額) ---
         function renderCourseGrid() {
             document.getElementById('course-count-display').innerText = `目前共有 ${DB.courses.length} 堂課程開放報名`;
             const grid = document.getElementById('course-grid');
             
             if (DB.courses.length === 0) {
-                grid.innerHTML = '<div class="col-span-full p-12 text-center text-gray-500 bg-white rounded-lg border border-dashed border-gray-300">目前尚無課程資料，請先以管理者身分登入並至「課程管理 (匯入)」上傳 Excel 檔案。</div>';
+                grid.innerHTML = '<div class="col-span-full p-12 text-center text-gray-500 bg-white rounded-lg border border-dashed border-gray-300">目前尚無課程資料，請先上傳 courses.xlsx 至專案或手動匯入。</div>';
                 return;
             }
 
@@ -710,7 +749,6 @@
             }).join('');
         }
 
-        // --- 分署窗口端：支援看到管理員核定進度 ---
         function renderBranchDash() {
             const branchRegs = DB.registrations.filter(r => r.branch === DB.currentUser.branch);
             const tbody = document.getElementById('branch-tbody');
@@ -807,8 +845,8 @@
             renderAdminDash();
         }
 
-        // 啟動時自動讀取快取
-        loadFromStorage();
+        // 啟動時自動讀取雲端預設 Excel
+        autoLoadMasterExcel();
     </script>
 </body>
 </html>
