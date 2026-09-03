@@ -128,7 +128,22 @@
             <div id="page-courses" class="hidden-view max-w-7xl mx-auto">
                 <div class="flex flex-col md:flex-row justify-between items-start md:items-end mb-6 gap-4">
                     <h2 class="text-2xl font-bold text-gray-800 border-l-4 border-[#003D79] pl-3">進修課程公告總覽</h2>
-                    <p class="text-sm text-gray-500 font-bold" id="course-count-display">目前共有 0 堂課程開放報名</p>
+                    
+                    <div class="flex flex-wrap items-center gap-3">
+                        <div class="flex items-center gap-2 bg-white px-3 py-1.5 rounded-lg border shadow-sm text-sm">
+                            <span class="text-gray-500 font-bold">課程範疇:</span>
+                            <select id="filter-category" onchange="renderCourseGrid()" class="bg-transparent font-bold text-[#003D79] focus:outline-none cursor-pointer">
+                                <option value="all">全部範疇</option>
+                            </select>
+                        </div>
+                        <div class="flex items-center gap-2 bg-white px-3 py-1.5 rounded-lg border shadow-sm text-sm">
+                            <span class="text-gray-500 font-bold">課程型態:</span>
+                            <select id="filter-format" onchange="renderCourseGrid()" class="bg-transparent font-bold text-[#003D79] focus:outline-none cursor-pointer">
+                                <option value="all">全部型態</option>
+                            </select>
+                        </div>
+                        <p class="text-sm text-gray-500 font-bold" id="course-count-display">目前共有 0 堂課程開放報名</p>
+                    </div>
                 </div>
                 <div id="course-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"></div>
             </div>
@@ -233,9 +248,15 @@
                 </div>
             </div>
 
-            <!-- 【管理員】預算與最終審核 -->
+            <!-- 【管理員】預算與最終審核 (已新增匯出 Excel 按鈕) -->
             <div id="page-admin-dash" class="hidden-view max-w-7xl mx-auto">
-                <h2 class="text-2xl font-bold text-gray-800 border-l-4 border-red-600 pl-3 mb-6">五分署預算與最終審核 (限分署同意後辦理)</h2>
+                <div class="flex flex-col md:flex-row justify-between items-start md:items-end mb-6 gap-4">
+                    <h2 class="text-2xl font-bold text-gray-800 border-l-4 border-red-600 pl-3">五分署預算與最終審核 (限分署同意後辦理)</h2>
+                    <button onclick="exportAdminReportExcel()" class="bg-emerald-600 hover:bg-emerald-700 text-white px-5 py-2.5 rounded-lg font-bold text-sm transition shadow-sm flex items-center gap-2 cursor-pointer">
+                        <span>📥 匯出 Excel 辦理狀況表</span>
+                    </button>
+                </div>
+
                 <div class="grid grid-cols-3 gap-6 mb-8">
                     <div class="bg-white p-6 rounded-lg shadow border"><p class="text-gray-500 font-bold mb-2">年度總預算</p><p class="text-3xl">300,000 元</p></div>
                     <div class="bg-white p-6 rounded-lg shadow border"><p class="text-gray-500 font-bold mb-2">已花費</p><p id="admin-spent" class="text-3xl text-[#003D79]">0 元</p></div>
@@ -294,7 +315,6 @@
             currentUser: null,
             currentCourseId: null,
             detailSourcePage: 'page-courses',
-            // 預設的使用者清單（可透過註冊新增）
             users: [
                 { username: 'trainer', password: '1234', name: '王大明', role: 'trainer', branch: '中彰投分署' },
                 { username: 'branch', password: '1234', name: '中彰投窗口', role: 'branch', branch: '中彰投分署' },
@@ -304,7 +324,6 @@
             registrations: []
         };
 
-        // --- 登入與註冊介面切換 ---
         function switchAuthTab(tab) {
             const btnLogin = document.getElementById('btn-tab-login');
             const btnReg = document.getElementById('btn-tab-register');
@@ -324,7 +343,6 @@
             }
         }
 
-        // --- 執行登入 ---
         function handleLogin() {
             const uInput = document.getElementById('login-user').value.trim();
             const pInput = document.getElementById('login-pass').value.trim();
@@ -343,7 +361,6 @@
             loginSuccess(foundUser);
         }
 
-        // --- 執行註冊 ---
         function handleRegister() {
             const name = document.getElementById('reg-name').value.trim();
             const username = document.getElementById('reg-user').value.trim();
@@ -356,7 +373,6 @@
                 return;
             }
 
-            // 檢查帳號是否已被註冊
             if (DB.users.some(u => u.username === username)) {
                 alert('❌ 此帳號名稱已經被使用，請更換其他帳號！');
                 return;
@@ -370,7 +386,6 @@
             loginSuccess(newUser);
         }
 
-        // --- 登入成功後初始化 ---
         function loginSuccess(user) {
             DB.currentUser = user;
             
@@ -403,7 +418,6 @@
             }
         }
 
-        // --- LocalStorage 持久化保存 ---
         function saveToStorage() {
             try {
                 localStorage.setItem('TRAINING_USERS', JSON.stringify(DB.users));
@@ -446,7 +460,6 @@
             document.getElementById('main-app').classList.add('hidden-view');
             document.getElementById('main-app').classList.remove('flex');
             document.getElementById('login-screen').classList.remove('hidden-view');
-            // 清空輸入框
             document.getElementById('login-user').value = '';
             document.getElementById('login-pass').value = '';
         }
@@ -465,7 +478,10 @@
             if(pageId === 'page-admin-dash') document.getElementById('tab-admin-dash')?.classList.add('tab-active');
             if(pageId === 'page-admin-courses') document.getElementById('tab-admin-courses')?.classList.add('tab-active');
 
-            if(pageId === 'page-courses') renderCourseGrid();
+            if(pageId === 'page-courses') {
+                updateFilterDropdowns();
+                renderCourseGrid();
+            }
             if(pageId === 'page-records') renderMyRecords();
             if(pageId === 'page-profile') renderProfile();
             if(pageId === 'page-branch-dash') renderBranchDash();
@@ -665,6 +681,7 @@
                 alert(`🎊 覆蓋成功！共成功載入 ${DB.courses.length} 筆課程資料。\n已偵測到 ${linkCount} 筆含有外部連結。`);
             }
             renderAdminCourses();
+            updateFilterDropdowns();
             renderCourseGrid();
         }
 
@@ -707,11 +724,33 @@
                 const statusEl = document.getElementById('upload-status');
                 if (statusEl) statusEl.innerText = `✅ 目前已有 ${DB.courses.length} 筆課程 (快取載入)`;
                 renderAdminCourses();
+                updateFilterDropdowns();
                 renderCourseGrid();
             } else {
                 const statusEl = document.getElementById('upload-status');
                 if (statusEl) statusEl.innerText = `尚未匯入，請上傳 courses.xlsx 到 GitHub`;
             }
+        }
+
+        function updateFilterDropdowns() {
+            const catSelect = document.getElementById('filter-category');
+            const fmtSelect = document.getElementById('filter-format');
+            if (!catSelect || !fmtSelect) return;
+
+            const categories = [...new Set(DB.courses.map(c => c.category).filter(Boolean))];
+            const formats = [...new Set(DB.courses.map(c => c.format).filter(Boolean))];
+
+            const currentCat = catSelect.value;
+            const currentFmt = fmtSelect.value;
+
+            catSelect.innerHTML = '<option value="all">全部範疇</option>' + 
+                categories.map(cat => `<option value="${cat}">${cat}</option>`).join('');
+            
+            fmtSelect.innerHTML = '<option value="all">全部型態</option>' + 
+                formats.map(fmt => `<option value="${fmt}">${fmt}</option>`).join('');
+
+            if (categories.includes(currentCat)) catSelect.value = currentCat;
+            if (formats.includes(currentFmt)) fmtSelect.value = currentFmt;
         }
 
         function renderAdminCourses() {
@@ -734,15 +773,26 @@
         }
 
         function renderCourseGrid() {
-            document.getElementById('course-count-display').innerText = `目前共有 ${DB.courses.length} 堂課程開放報名`;
+            const selectedCat = document.getElementById('filter-category')?.value || 'all';
+            const selectedFmt = document.getElementById('filter-format')?.value || 'all';
+
+            let filteredCourses = DB.courses;
+            if (selectedCat !== 'all') {
+                filteredCourses = filteredCourses.filter(c => c.category === selectedCat);
+            }
+            if (selectedFmt !== 'all') {
+                filteredCourses = filteredCourses.filter(c => c.format === selectedFmt);
+            }
+
+            document.getElementById('course-count-display').innerText = `目前共有 ${filteredCourses.length} 堂課程 (符合條件)`;
             const grid = document.getElementById('course-grid');
             
-            if (DB.courses.length === 0) {
-                grid.innerHTML = '<div class="col-span-full p-12 text-center text-gray-500 bg-white rounded-lg border border-dashed border-gray-300">目前尚無課程資料，請先上傳 courses.xlsx 至專案或手動匯入。</div>';
+            if (filteredCourses.length === 0) {
+                grid.innerHTML = '<div class="col-span-full p-12 text-center text-gray-500 bg-white rounded-lg border border-dashed border-gray-300">沒有找到符合篩選條件的課程。</div>';
                 return;
             }
 
-            grid.innerHTML = DB.courses.map(c => `
+            grid.innerHTML = filteredCourses.map(c => `
                 <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-5 flex flex-col hover:shadow-lg transition">
                     <div class="flex justify-between items-center mb-2">
                         <span class="text-xs bg-blue-100 text-[#003D79] px-2 py-1 rounded font-bold">${c.category}</span>
@@ -924,7 +974,6 @@
         }
 
         function renderBranchDash() {
-            // 分署窗口只能看見自己所屬分署的報名紀錄
             const branchRegs = DB.registrations.filter(r => r.branch === DB.currentUser.branch);
             const tbody = document.getElementById('branch-tbody');
             if (branchRegs.length === 0) {
@@ -1026,6 +1075,36 @@
             reg.adminStatus = newStatus;
             saveToStorage();
             renderAdminDash();
+        }
+
+        // --- 管理員：一鍵匯出 Excel 辦理狀況表 ---
+        function exportAdminReportExcel() {
+            if (DB.registrations.length === 0) {
+                alert("目前尚無任何報名與辦理狀況資料可供匯出！");
+                return;
+            }
+
+            // 整理匯出資料格式
+            const exportData = DB.registrations.map((r, index) => ({
+                "序號": index + 1,
+                "報名日期": r.date || '',
+                "所屬分署": r.branch || '',
+                "訓練師姓名": r.userName || '',
+                "課程名稱": r.title || '',
+                "課程預定日期": r.courseDate || '未定',
+                "課程費用": r.adminFee || '免費',
+                "分署審核決議": r.branchStatus || '',
+                "管理者最終核定進度": r.adminStatus === '已完成報名' ? '已完成報名 (已核可扣款)' : (r.adminStatus === '已取消' ? '已取消/退回' : '待處理/等待中')
+            }));
+
+            // 建立工作表並匯出
+            const worksheet = XLSX.utils.json_to_sheet(exportData);
+            const workbook = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(workbook, worksheet, "辦理狀況總表");
+
+            // 產生檔案並下載
+            const todayStr = new Date().toISOString().slice(0, 10).replace(/-/g, '');
+            XLSX.writeFile(workbook, `專業知能進修平台_辦理狀況總表_${todayStr}.xlsx`);
         }
 
         autoLoadMasterExcel();
