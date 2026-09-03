@@ -19,20 +19,76 @@
 </head>
 <body class="bg-gray-50 font-sans h-screen overflow-hidden">
 
-    <!-- 登入頁面 -->
-    <div id="login-screen" class="flex h-screen items-center justify-center bg-gray-100">
-        <div class="bg-white p-8 rounded-xl shadow-lg w-full max-w-md border-t-8 border-[#003D79]">
-            <h1 class="text-2xl font-bold text-center text-gray-800 mb-6">進修平台登入</h1>
-            <div class="space-y-6">
+    <!-- 登入與註冊頁面 -->
+    <div id="login-screen" class="flex h-screen items-center justify-center bg-slate-100">
+        <div class="bg-white p-8 rounded-2xl shadow-xl w-full max-w-md border-t-8 border-[#003D79]">
+            <div class="text-center mb-6">
+                <h1 class="text-2xl font-bold text-gray-800">專業知能進修平台</h1>
+                <p class="text-sm text-gray-500 mt-1">請登入您的帳號以繼續操作</p>
+            </div>
+
+            <!-- 切換分頁按鈕 (登入 / 註冊) -->
+            <div class="flex border-b mb-6 text-sm font-bold">
+                <button id="btn-tab-login" onclick="switchAuthTab('login')" class="flex-1 pb-2 text-center border-b-2 border-[#003D79] text-[#003D79] transition">帳號登入</button>
+                <button id="btn-tab-register" onclick="switchAuthTab('register')" class="flex-1 pb-2 text-center border-b-2 border-transparent text-gray-400 hover:text-gray-600 transition">註冊新帳號</button>
+            </div>
+
+            <!-- 【登入表單】 -->
+            <div id="form-login" class="space-y-4">
                 <div>
-                    <label class="block text-sm font-bold text-gray-700 mb-2">請選擇登入角色</label>
-                    <select id="login-role" class="w-full border-2 border-gray-300 rounded-lg p-3 text-lg focus:outline-none focus:border-[#003D79]">
-                        <option value="trainer">🧑‍🏫 訓練師 (找課程/報名/個人資料)</option>
-                        <option value="branch">🏢 分署窗口 (分署審核與進度管理)</option>
-                        <option value="admin">⚙️ 職訓團隊管理者 (最終審核與預算)</option>
+                    <label class="block text-xs font-bold text-gray-600 mb-1">帳號 (Username)</label>
+                    <input type="text" id="login-user" placeholder="請輸入帳號 (例如: trainer)" class="w-full border border-gray-300 rounded-lg p-3 text-sm focus:outline-none focus:border-[#003D79]">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-gray-600 mb-1">密碼 (Password)</label>
+                    <input type="password" id="login-pass" placeholder="請輸入密碼 (預設: 1234)" class="w-full border border-gray-300 rounded-lg p-3 text-sm focus:outline-none focus:border-[#003D79]">
+                </div>
+                <button onclick="handleLogin()" class="w-full bg-[#003D79] text-white py-3 rounded-lg font-bold text-sm hover:bg-blue-800 transition shadow-md mt-2">登入系統</button>
+                
+                <div class="bg-blue-50 p-3 rounded-lg text-xs text-blue-800 mt-4 space-y-1">
+                    <p class="font-bold">💡 測試快速登入帳號：</p>
+                    <p>• 訓練師：帳號 <span class="font-mono bg-white px-1 rounded">trainer</span> / 密碼 <span class="font-mono bg-white px-1 rounded">1234</span></p>
+                    <p>• 分署窗口：帳號 <span class="font-mono bg-white px-1 rounded">branch</span> / 密碼 <span class="font-mono bg-white px-1 rounded">1234</span></p>
+                    <p>• 管理者：帳號 <span class="font-mono bg-white px-1 rounded">admin</span> / 密碼 <span class="font-mono bg-white px-1 rounded">1234</span></p>
+                </div>
+            </div>
+
+            <!-- 【註冊表單】 -->
+            <div id="form-register" class="hidden-view space-y-4">
+                <div>
+                    <label class="block text-xs font-bold text-gray-600 mb-1">真實姓名</label>
+                    <input type="text" id="reg-name" placeholder="例如: 陳小明" class="w-full border border-gray-300 rounded-lg p-2.5 text-sm focus:outline-none focus:border-[#003D79]">
+                </div>
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs font-bold text-gray-600 mb-1">自訂帳號</label>
+                        <input type="text" id="reg-user" placeholder="英文或數字" class="w-full border border-gray-300 rounded-lg p-2.5 text-sm focus:outline-none focus:border-[#003D79]">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-gray-600 mb-1">自訂密碼</label>
+                        <input type="password" id="reg-pass" placeholder="密碼" class="w-full border border-gray-300 rounded-lg p-2.5 text-sm focus:outline-none focus:border-[#003D79]">
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-gray-600 mb-1">選擇身分角色</label>
+                    <select id="reg-role" class="w-full border border-gray-300 rounded-lg p-2.5 text-sm focus:outline-none focus:border-[#003D79]">
+                        <option value="trainer">🧑‍🏫 訓練師</option>
+                        <option value="branch">🏢 分署窗口</option>
+                        <option value="admin">⚙️ 職訓團隊管理者</option>
                     </select>
                 </div>
-                <button onclick="performLogin()" class="w-full bg-[#003D79] text-white py-3 rounded-lg font-bold text-lg hover:bg-blue-800 transition">登入系統</button>
+                <div>
+                    <label class="block text-xs font-bold text-gray-600 mb-1">所屬分署</label>
+                    <select id="reg-branch" class="w-full border border-gray-300 rounded-lg p-2.5 text-sm focus:outline-none focus:border-[#003D79]">
+                        <option value="中彰投分署">中彰投分署</option>
+                        <option value="北基宜花金馬分署">北基宜花金馬分署</option>
+                        <option value="桃竹苗分署">桃竹苗分署</option>
+                        <option value="雲嘉南分署">雲嘉南分署</option>
+                        <option value="高屏澎東分署">高屏澎東分署</option>
+                        <option value="全區">全區 (管理者專用)</option>
+                    </select>
+                </div>
+                <button onclick="handleRegister()" class="w-full bg-emerald-600 text-white py-3 rounded-lg font-bold text-sm hover:bg-emerald-700 transition shadow-md mt-2">確認註冊並登入</button>
             </div>
         </div>
     </div>
@@ -151,17 +207,16 @@
             <div id="page-profile" class="hidden-view max-w-3xl mx-auto">
                 <h2 class="text-2xl font-bold text-gray-800 border-l-4 border-[#003D79] pl-3 mb-6">我的個人資料</h2>
                 <div class="bg-white p-8 rounded-lg shadow-sm border border-gray-200 grid grid-cols-2 gap-6">
-                    <div><label class="block text-gray-500 text-sm mb-1">姓名 (唯讀)</label><input type="text" value="王大明" readonly class="w-full border rounded p-2 bg-gray-50"></div>
-                    <div><label class="block text-gray-500 text-sm mb-1">所屬分署 (唯讀)</label><input type="text" value="中彰投分署" readonly class="w-full border rounded p-2 bg-gray-50"></div>
-                    <div><label class="block text-gray-500 text-sm mb-1">聯絡電話</label><input type="text" value="0912-345678" class="w-full border rounded p-2"></div>
-                    <div><label class="block text-gray-500 text-sm mb-1">Email</label><input type="text" value="wang@example.com" class="w-full border rounded p-2"></div>
-                    <div class="col-span-2"><button class="bg-[#003D79] text-white px-6 py-2 rounded font-bold">儲存修改</button></div>
+                    <div><label class="block text-gray-500 text-sm mb-1">姓名 (唯讀)</label><input type="text" id="profile-name" readonly class="w-full border rounded p-2 bg-gray-50 font-bold"></div>
+                    <div><label class="block text-gray-500 text-sm mb-1">所屬分署 (唯讀)</label><input type="text" id="profile-branch" readonly class="w-full border rounded p-2 bg-gray-50 font-bold"></div>
+                    <div><label class="block text-gray-500 text-sm mb-1">帳號</label><input type="text" id="profile-username" readonly class="w-full border rounded p-2 bg-gray-50"></div>
+                    <div><label class="block text-gray-500 text-sm mb-1">身分</label><input type="text" id="profile-role" readonly class="w-full border rounded p-2 bg-gray-50"></div>
                 </div>
             </div>
 
             <!-- 【分署窗口】分署報名審核頁 -->
             <div id="page-branch-dash" class="hidden-view max-w-6xl mx-auto">
-                <h2 class="text-2xl font-bold text-gray-800 border-l-4 border-green-600 pl-3 mb-6">分署報名審核與管理 (僅顯示：中彰投分署)</h2>
+                <h2 class="text-2xl font-bold text-gray-800 border-l-4 border-green-600 pl-3 mb-6" id="branch-title-text">分署報名審核與管理</h2>
                 <div class="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
                     <table class="w-full text-left text-sm">
                         <thead class="bg-gray-100 text-gray-700">
@@ -178,7 +233,7 @@
                 </div>
             </div>
 
-            <!-- 【管理員】預算與最終審核 (已新增課程費用欄位) -->
+            <!-- 【管理員】預算與最終審核 -->
             <div id="page-admin-dash" class="hidden-view max-w-7xl mx-auto">
                 <h2 class="text-2xl font-bold text-gray-800 border-l-4 border-red-600 pl-3 mb-6">五分署預算與最終審核 (限分署同意後辦理)</h2>
                 <div class="grid grid-cols-3 gap-6 mb-8">
@@ -239,17 +294,119 @@
             currentUser: null,
             currentCourseId: null,
             detailSourcePage: 'page-courses',
-            users: {
-                trainer: { id: 1, name: '王大明', role: 'trainer', branch: '中彰投分署' },
-                branch: { id: 2, name: '中彰投窗口', role: 'branch', branch: '中彰投分署' },
-                admin: { id: 3, name: '系統管理員', role: 'admin', branch: '全區' }
-            },
+            // 預設的使用者清單（可透過註冊新增）
+            users: [
+                { username: 'trainer', password: '1234', name: '王大明', role: 'trainer', branch: '中彰投分署' },
+                { username: 'branch', password: '1234', name: '中彰投窗口', role: 'branch', branch: '中彰投分署' },
+                { username: 'admin', password: '1234', name: '系統管理員', role: 'admin', branch: '全區' }
+            ],
             courses: [],
             registrations: []
         };
 
+        // --- 登入與註冊介面切換 ---
+        function switchAuthTab(tab) {
+            const btnLogin = document.getElementById('btn-tab-login');
+            const btnReg = document.getElementById('btn-tab-register');
+            const formLogin = document.getElementById('form-login');
+            const formReg = document.getElementById('form-register');
+
+            if (tab === 'login') {
+                btnLogin.className = "flex-1 pb-2 text-center border-b-2 border-[#003D79] text-[#003D79] font-bold transition";
+                btnReg.className = "flex-1 pb-2 text-center border-b-2 border-transparent text-gray-400 hover:text-gray-600 transition";
+                formLogin.classList.remove('hidden-view');
+                formReg.classList.add('hidden-view');
+            } else {
+                btnReg.className = "flex-1 pb-2 text-center border-b-2 border-emerald-600 text-emerald-600 font-bold transition";
+                btnLogin.className = "flex-1 pb-2 text-center border-b-2 border-transparent text-gray-400 hover:text-gray-600 transition";
+                formReg.classList.remove('hidden-view');
+                formLogin.classList.add('hidden-view');
+            }
+        }
+
+        // --- 執行登入 ---
+        function handleLogin() {
+            const uInput = document.getElementById('login-user').value.trim();
+            const pInput = document.getElementById('login-pass').value.trim();
+
+            if (!uInput || !pInput) {
+                alert('⚠️ 請輸入帳號與密碼！');
+                return;
+            }
+
+            const foundUser = DB.users.find(u => u.username === uInput && u.password === pInput);
+            if (!foundUser) {
+                alert('❌ 帳號或密碼錯誤，請重新輸入！');
+                return;
+            }
+
+            loginSuccess(foundUser);
+        }
+
+        // --- 執行註冊 ---
+        function handleRegister() {
+            const name = document.getElementById('reg-name').value.trim();
+            const username = document.getElementById('reg-user').value.trim();
+            const password = document.getElementById('reg-pass').value.trim();
+            const role = document.getElementById('reg-role').value;
+            const branch = document.getElementById('reg-branch').value;
+
+            if (!name || !username || !password) {
+                alert('⚠️ 請完整填寫姓名、帳號與密碼！');
+                return;
+            }
+
+            // 檢查帳號是否已被註冊
+            if (DB.users.some(u => u.username === username)) {
+                alert('❌ 此帳號名稱已經被使用，請更換其他帳號！');
+                return;
+            }
+
+            const newUser = { username, password, name, role, branch };
+            DB.users.push(newUser);
+            saveToStorage();
+
+            alert('🎉 註冊成功！已自動為您登入系統。');
+            loginSuccess(newUser);
+        }
+
+        // --- 登入成功後初始化 ---
+        function loginSuccess(user) {
+            DB.currentUser = user;
+            
+            document.getElementById('login-screen').classList.add('hidden-view');
+            document.getElementById('main-app').classList.remove('hidden-view');
+            document.getElementById('main-app').classList.add('flex');
+            document.getElementById('user-greeting').innerText = `${DB.currentUser.name} (${DB.currentUser.branch})，您好`;
+            
+            const navTrainer = document.getElementById('nav-trainer');
+            const navBranch = document.getElementById('nav-branch');
+            const navAdmin = document.getElementById('nav-admin');
+
+            navTrainer.classList.add('hidden'); navTrainer.classList.remove('flex');
+            navBranch.classList.add('hidden'); navBranch.classList.remove('flex');
+            navAdmin.classList.add('hidden'); navAdmin.classList.remove('flex');
+
+            if (user.role === 'trainer') {
+                navTrainer.classList.remove('hidden');
+                navTrainer.classList.add('flex');
+                switchPage('page-courses');
+            } else if (user.role === 'branch') {
+                navBranch.classList.remove('hidden');
+                navBranch.classList.add('flex');
+                document.getElementById('branch-title-text').innerText = `分署報名審核與管理 (僅顯示：${user.branch})`;
+                switchPage('page-branch-dash');
+            } else if (user.role === 'admin') {
+                navAdmin.classList.remove('hidden');
+                navAdmin.classList.add('flex');
+                switchPage('page-admin-dash');
+            }
+        }
+
+        // --- LocalStorage 持久化保存 ---
         function saveToStorage() {
             try {
+                localStorage.setItem('TRAINING_USERS', JSON.stringify(DB.users));
                 localStorage.setItem('TRAINING_COURSES', JSON.stringify(DB.courses));
                 localStorage.setItem('TRAINING_REGS', JSON.stringify(DB.registrations));
             } catch(e) {
@@ -259,8 +416,12 @@
 
         function loadFromStorage() {
             try {
+                const savedUsers = localStorage.getItem('TRAINING_USERS');
                 const savedCourses = localStorage.getItem('TRAINING_COURSES');
                 const savedRegs = localStorage.getItem('TRAINING_REGS');
+                if (savedUsers) {
+                    DB.users = JSON.parse(savedUsers);
+                }
                 if (savedCourses) {
                     DB.courses = JSON.parse(savedCourses);
                 }
@@ -273,54 +434,10 @@
         }
 
         function clearAllData() {
-            if (confirm("確定要清空所有資料嗎？\n清空後「課程清單」、「訓練師報名紀錄」及「分署審核紀錄」將全數清除歸零。")) {
-                localStorage.removeItem('TRAINING_COURSES');
-                localStorage.removeItem('TRAINING_REGS');
-                DB.courses = [];
-                DB.registrations = [];
-                
-                const statusEl = document.getElementById('upload-status');
-                if (statusEl) statusEl.innerText = '尚未匯入，無資料';
-                
-                renderAdminCourses();
-                renderAdminDash();
-                renderCourseGrid();
-                renderMyRecords();
-                renderBranchDash();
-                
-                alert("已完全清空！");
-            }
-        }
-
-        function performLogin() {
-            const role = document.getElementById('login-role').value;
-            DB.currentUser = DB.users[role];
-            
-            document.getElementById('login-screen').classList.add('hidden-view');
-            document.getElementById('main-app').classList.remove('hidden-view');
-            document.getElementById('main-app').classList.add('flex');
-            document.getElementById('user-greeting').innerText = `${DB.currentUser.name}，您好`;
-            
-            const navTrainer = document.getElementById('nav-trainer');
-            const navBranch = document.getElementById('nav-branch');
-            const navAdmin = document.getElementById('nav-admin');
-
-            navTrainer.classList.add('hidden'); navTrainer.classList.remove('flex');
-            navBranch.classList.add('hidden'); navBranch.classList.remove('flex');
-            navAdmin.classList.add('hidden'); navAdmin.classList.remove('flex');
-
-            if (role === 'trainer') {
-                navTrainer.classList.remove('hidden');
-                navTrainer.classList.add('flex');
-                switchPage('page-courses');
-            } else if (role === 'branch') {
-                navBranch.classList.remove('hidden');
-                navBranch.classList.add('flex');
-                switchPage('page-branch-dash');
-            } else if (role === 'admin') {
-                navAdmin.classList.remove('hidden');
-                navAdmin.classList.add('flex');
-                switchPage('page-admin-dash');
+            if (confirm("確定要清空所有資料嗎？\n清空後「使用者帳號」、「課程清單」、「報名紀錄」將全數清除歸零。")) {
+                localStorage.clear();
+                alert("已完全清空！請重新整理網頁。");
+                location.reload();
             }
         }
 
@@ -329,6 +446,9 @@
             document.getElementById('main-app').classList.add('hidden-view');
             document.getElementById('main-app').classList.remove('flex');
             document.getElementById('login-screen').classList.remove('hidden-view');
+            // 清空輸入框
+            document.getElementById('login-user').value = '';
+            document.getElementById('login-pass').value = '';
         }
 
         function switchPage(pageId) {
@@ -347,6 +467,7 @@
 
             if(pageId === 'page-courses') renderCourseGrid();
             if(pageId === 'page-records') renderMyRecords();
+            if(pageId === 'page-profile') renderProfile();
             if(pageId === 'page-branch-dash') renderBranchDash();
             if(pageId === 'page-admin-dash') renderAdminDash();
             if(pageId === 'page-admin-courses') renderAdminCourses();
@@ -713,12 +834,12 @@
 
         function registerCourse() {
             const course = DB.courses.find(c => c.id === DB.currentCourseId);
-            if(DB.registrations.find(r => r.userId === DB.currentUser.id && r.courseId === course.id)) {
+            if(DB.registrations.find(r => r.userId === DB.currentUser.username && r.courseId === course.id)) {
                 alert('⚠️ 您已經報名過囉！'); return;
             }
             DB.registrations.push({
                 id: Date.now(), 
-                userId: DB.currentUser.id, 
+                userId: DB.currentUser.username, 
                 userName: DB.currentUser.name, 
                 branch: DB.currentUser.branch,
                 courseId: course.id, 
@@ -745,7 +866,7 @@
         }
 
         function renderMyRecords() {
-            const myRegs = DB.registrations.filter(r => r.userId === DB.currentUser.id);
+            const myRegs = DB.registrations.filter(r => r.userId === DB.currentUser.username);
             const tbody = document.getElementById('records-tbody');
             if (myRegs.length === 0) {
                 tbody.innerHTML = '<tr><td colspan="5" class="p-8 text-center text-gray-500">尚無報名紀錄</td></tr>';
@@ -790,11 +911,24 @@
             }).join('');
         }
 
+        function renderProfile() {
+            if (!DB.currentUser) return;
+            document.getElementById('profile-name').value = DB.currentUser.name;
+            document.getElementById('profile-branch').value = DB.currentUser.branch;
+            document.getElementById('profile-username').value = DB.currentUser.username;
+            
+            let roleText = '訓練師';
+            if (DB.currentUser.role === 'branch') roleText = '分署窗口';
+            if (DB.currentUser.role === 'admin') roleText = '職訓團隊管理者';
+            document.getElementById('profile-role').value = roleText;
+        }
+
         function renderBranchDash() {
+            // 分署窗口只能看見自己所屬分署的報名紀錄
             const branchRegs = DB.registrations.filter(r => r.branch === DB.currentUser.branch);
             const tbody = document.getElementById('branch-tbody');
             if (branchRegs.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="5" class="p-8 text-center text-gray-500">轄下尚無訓練師提交報名申請</td></tr>';
+                tbody.innerHTML = `<tr><td colspan="5" class="p-8 text-center text-gray-500">【${DB.currentUser.branch}】轄下尚無訓練師提交報名申請</td></tr>`;
                 return;
             }
             tbody.innerHTML = branchRegs.map(r => {
@@ -849,7 +983,6 @@
             renderBranchDash();
         }
 
-        // --- 管理員：預算與最終審核 (已加入課程費用欄位) ---
         function renderAdminDash() {
             const spent = DB.registrations.filter(r => r.adminStatus === '已完成報名').reduce((sum, r) => sum + r.feeNum, 0);
             document.getElementById('admin-spent').innerText = spent.toLocaleString() + ' 元';
