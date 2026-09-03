@@ -77,15 +77,14 @@
                 <div id="course-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"></div>
             </div>
 
-            <!-- 課程詳細資訊頁 (支援訓練師與分署窗口查看) -->
+            <!-- 課程詳細資訊頁 -->
             <div id="page-detail" class="hidden-view max-w-5xl mx-auto">
-                <button id="detail-back-btn" onclick="goBackFromDetail()" class="text-[#003D79] font-bold mb-4 hover:underline">← 返回課程總覽</button>
+                <button id="detail-back-btn" onclick="goBackFromDetail()" class="text-[#003D79] font-bold mb-4 hover:underline flex items-center gap-1">← 返回</button>
                 <div class="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
                     <div class="bg-blue-50 p-6 border-b flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
                         <div>
                             <span id="detail-category" class="bg-blue-200 text-[#003D79] text-xs font-bold px-2 py-1 rounded mb-2 inline-block"></span>
                             
-                            <!-- 課程名稱與外部跳轉按鈕 -->
                             <div class="flex flex-col sm:flex-row sm:items-center gap-3 mb-2">
                                 <a id="detail-title-link" href="#" target="_blank" rel="noopener noreferrer" class="text-2xl font-bold text-gray-800 transition">
                                     <span id="detail-title"></span>
@@ -116,7 +115,6 @@
                             <div><p class="font-bold text-gray-700 mb-1">課程時數</p><p id="detail-hours" class="text-gray-600"></p></div>
                             <div><p class="font-bold text-gray-700 mb-1">備註</p><p id="detail-note" class="text-orange-600 whitespace-pre-line"></p></div>
                             
-                            <!-- 金額在左、費用說明在右 -->
                             <div class="border-t pt-3">
                                 <p class="font-bold text-gray-700 mb-1">金額</p>
                                 <p id="detail-fee" class="text-red-600 font-bold text-lg"></p>
@@ -131,11 +129,19 @@
             </div>
 
             <!-- 【訓練師】我的報名紀錄 -->
-            <div id="page-records" class="hidden-view max-w-5xl mx-auto">
+            <div id="page-records" class="hidden-view max-w-6xl mx-auto">
                 <h2 class="text-2xl font-bold text-gray-800 border-l-4 border-[#003D79] pl-3 mb-6">我的報名紀錄</h2>
                 <div class="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
                     <table class="w-full text-left text-sm">
-                        <thead class="bg-gray-100 text-gray-700"><tr><th class="p-4">報名日期</th><th class="p-4">課程名稱</th><th class="p-4">費用(原價)</th><th class="p-4">審核進度狀態</th></tr></thead>
+                        <thead class="bg-gray-100 text-gray-700">
+                            <tr>
+                                <th class="p-4">報名日期</th>
+                                <th class="p-4">課程名稱</th>
+                                <th class="p-4">預定日期</th>
+                                <th class="p-4">審核進度狀態</th>
+                                <th class="p-4">操作</th>
+                            </tr>
+                        </thead>
                         <tbody id="records-tbody" class="divide-y divide-gray-200"></tbody>
                     </table>
                 </div>
@@ -153,7 +159,7 @@
                 </div>
             </div>
 
-            <!-- 【分署窗口】分署報名審核頁 (課程名稱支援點擊跳轉詳細頁) -->
+            <!-- 【分署窗口】分署報名審核頁 -->
             <div id="page-branch-dash" class="hidden-view max-w-6xl mx-auto">
                 <h2 class="text-2xl font-bold text-gray-800 border-l-4 border-green-600 pl-3 mb-6">分署報名審核與管理 (僅顯示：中彰投分署)</h2>
                 <div class="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
@@ -161,7 +167,7 @@
                         <thead class="bg-gray-100 text-gray-700">
                             <tr>
                                 <th class="p-4">訓練師姓名</th>
-                                <th class="p-4">報名課程 (點擊看詳細)</th>
+                                <th class="p-4">報名課程 (點擊看詳細資訊)</th>
                                 <th class="p-4">報名日期</th>
                                 <th class="p-4">分署審核決議</th>
                                 <th class="p-4">管理員核定進度</th>
@@ -172,7 +178,7 @@
                 </div>
             </div>
 
-            <!-- 【管理員】預算與最終審核 -->
+            <!-- 【管理員】預算與最終審核 (已新增課程費用欄位) -->
             <div id="page-admin-dash" class="hidden-view max-w-7xl mx-auto">
                 <h2 class="text-2xl font-bold text-gray-800 border-l-4 border-red-600 pl-3 mb-6">五分署預算與最終審核 (限分署同意後辦理)</h2>
                 <div class="grid grid-cols-3 gap-6 mb-8">
@@ -186,6 +192,7 @@
                             <tr>
                                 <th class="p-4">分署/姓名</th>
                                 <th class="p-4">課程名稱</th>
+                                <th class="p-4">課程費用</th>
                                 <th class="p-4">分署狀態</th>
                                 <th class="p-4">管理者最終審核</th>
                             </tr>
@@ -231,7 +238,7 @@
             budget: 300000,
             currentUser: null,
             currentCourseId: null,
-            detailSourcePage: 'page-courses', // 記錄從哪一頁點進詳細頁面
+            detailSourcePage: 'page-courses',
             users: {
                 trainer: { id: 1, name: '王大明', role: 'trainer', branch: '中彰投分署' },
                 branch: { id: 2, name: '中彰投窗口', role: 'branch', branch: '中彰投分署' },
@@ -241,7 +248,6 @@
             registrations: []
         };
 
-        // --- LocalStorage 持久化保存 ---
         function saveToStorage() {
             try {
                 localStorage.setItem('TRAINING_COURSES', JSON.stringify(DB.courses));
@@ -266,7 +272,6 @@
             }
         }
 
-        // --- 清空所有資料 ---
         function clearAllData() {
             if (confirm("確定要清空所有資料嗎？\n清空後「課程清單」、「訓練師報名紀錄」及「分署審核紀錄」將全數清除歸零。")) {
                 localStorage.removeItem('TRAINING_COURSES');
@@ -287,7 +292,6 @@
             }
         }
 
-        // --- 登入/登出管理 ---
         function performLogin() {
             const role = document.getElementById('login-role').value;
             DB.currentUser = DB.users[role];
@@ -391,7 +395,6 @@
             return { num: 0, text: str };
         }
 
-        // --- 核心：共用 Excel 解析引擎 ---
         function processWorkbookData(workbook, isManualUpload = false) {
             const worksheet = workbook.Sheets[workbook.SheetNames[0]];
             const rawData = XLSX.utils.sheet_to_json(worksheet, { header: 1, defval: "" });
@@ -544,7 +547,6 @@
             renderCourseGrid();
         }
 
-        // --- 手動上傳處理 ---
         function handleExcelUpload(event) {
             const file = event.target.files[0];
             if (!file) return;
@@ -562,7 +564,6 @@
             reader.readAsArrayBuffer(file);
         }
 
-        // --- 自動從 GitHub 讀取預設 Excel ---
         async function autoLoadMasterExcel() {
             loadFromStorage();
             
@@ -592,7 +593,6 @@
             }
         }
 
-        // --- 管理員：後台表格渲染 ---
         function renderAdminCourses() {
             const tbody = document.getElementById('admin-courses-tbody');
             if (DB.courses.length === 0) {
@@ -612,7 +612,6 @@
             `).join('');
         }
 
-        // --- 訓練師：課程公告總覽 ---
         function renderCourseGrid() {
             document.getElementById('course-count-display').innerText = `目前共有 ${DB.courses.length} 堂課程開放報名`;
             const grid = document.getElementById('course-grid');
@@ -639,17 +638,20 @@
             `).join('');
         }
 
-        // --- 詳細頁面跳轉 (支援從不同頁面進入與返回) ---
-        function jumpToDetail(courseId, fromPage = 'page-courses') {
-            const c = DB.courses.find(x => x.id === courseId);
+        function jumpToDetail(courseIdentifier, fromPage = 'page-courses') {
+            const c = DB.courses.find(x => 
+                String(x.id) === String(courseIdentifier) || 
+                x.title === courseIdentifier
+            );
+
             if (!c) {
-                alert("找不到該課程的詳細資料！");
+                alert("找不到該課程的詳細資訊，請確認課程資料是否已載入！");
                 return;
             }
-            DB.currentCourseId = courseId;
+
+            DB.currentCourseId = c.id;
             DB.detailSourcePage = fromPage;
             
-            // 調整返回按鈕文字
             const backBtn = document.getElementById('detail-back-btn');
             if (fromPage === 'page-branch-dash') {
                 backBtn.innerText = '← 返回分署審核管理';
@@ -657,7 +659,6 @@
                 backBtn.innerText = '← 返回課程總覽';
             }
 
-            // 權限控制：分署窗口純檢視，隱藏報名按鈕
             const regBtn = document.getElementById('detail-register-btn');
             if (DB.currentUser && DB.currentUser.role === 'branch') {
                 regBtn.classList.add('hidden');
@@ -706,7 +707,6 @@
             switchPage('page-detail');
         }
 
-        // --- 從詳細頁面智慧返回 ---
         function goBackFromDetail() {
             switchPage(DB.detailSourcePage || 'page-courses');
         }
@@ -723,6 +723,7 @@
                 branch: DB.currentUser.branch,
                 courseId: course.id, 
                 title: course.title, 
+                courseDate: course.date || '未定',
                 feeNum: course.rawFeeNum, 
                 adminFee: course.adminFee,
                 branchStatus: '分署審核中', 
@@ -734,11 +735,20 @@
             switchPage('page-records');
         }
 
+        function cancelRegistration(regId) {
+            if (confirm("確定要取消這筆報名紀錄嗎？")) {
+                DB.registrations = DB.registrations.filter(r => r.id !== regId);
+                saveToStorage();
+                renderMyRecords();
+                alert("已成功取消報名。");
+            }
+        }
+
         function renderMyRecords() {
             const myRegs = DB.registrations.filter(r => r.userId === DB.currentUser.id);
             const tbody = document.getElementById('records-tbody');
             if (myRegs.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="4" class="p-8 text-center text-gray-500">尚無報名紀錄</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="5" class="p-8 text-center text-gray-500">尚無報名紀錄</td></tr>';
                 return;
             }
             tbody.innerHTML = myRegs.map(r => {
@@ -763,18 +773,23 @@
                     displayStatus = '⏳ 分署審核中';
                 }
 
+                let canCancel = (r.branchStatus === '分署審核中' || r.branchStatus === '分署同意') && r.adminStatus !== '已完成報名';
+                let actionBtn = canCancel ? 
+                    `<button onclick="cancelRegistration(${r.id})" class="bg-red-50 text-red-600 hover:bg-red-600 hover:text-white border border-red-200 px-3 py-1.5 rounded text-xs font-bold transition">取消報名</button>` : 
+                    `<span class="text-gray-400 text-xs">無法取消</span>`;
+
                 return `
                     <tr class="hover:bg-gray-50 border-b">
                         <td class="p-4 text-sm text-gray-600">${r.date}</td>
                         <td class="p-4 font-bold text-[#003D79]">${r.title}</td>
-                        <td class="p-4 font-bold text-red-600">${r.adminFee}</td>
+                        <td class="p-4 text-sm text-gray-600">${r.courseDate || '未定'}</td>
                         <td class="p-4"><span class="px-3 py-1 rounded text-sm font-bold ${badgeColor}">${displayStatus}</span></td>
+                        <td class="p-4">${actionBtn}</td>
                     </tr>
                 `;
             }).join('');
         }
 
-        // --- 分署窗口端：支援點擊課程名稱看詳細資訊 ---
         function renderBranchDash() {
             const branchRegs = DB.registrations.filter(r => r.branch === DB.currentUser.branch);
             const tbody = document.getElementById('branch-tbody');
@@ -796,13 +811,15 @@
                     adminBadge = '<span class="text-xs text-red-500 font-medium">分署退件 (不送審)</span>';
                 }
 
+                const safeTitle = r.title.replace(/'/g, "\\'");
+
                 return `
                     <tr class="hover:bg-gray-50 border-b">
                         <td class="p-4 font-bold text-gray-800">${r.userName}</td>
                         <td class="p-4">
-                            <button onclick="jumpToDetail(${r.courseId}, 'page-branch-dash')" class="text-left font-bold text-[#003D79] hover:text-blue-600 hover:underline flex items-center gap-1.5 group">
+                            <button type="button" onclick="jumpToDetail('${safeTitle}', 'page-branch-dash')" class="text-left font-bold text-blue-600 hover:text-[#003D79] hover:underline underline-offset-4 decoration-blue-300 inline-flex items-center gap-1.5 cursor-pointer group">
                                 <span>${r.title}</span>
-                                <span class="text-xs text-blue-500 opacity-70 group-hover:opacity-100">🔍</span>
+                                <span class="text-xs bg-blue-50 text-blue-600 px-1.5 py-0.5 rounded border border-blue-200 group-hover:bg-blue-600 group-hover:text-white transition">🔍 詳情</span>
                             </button>
                         </td>
                         <td class="p-4 text-sm text-gray-600">${r.date}</td>
@@ -832,6 +849,7 @@
             renderBranchDash();
         }
 
+        // --- 管理員：預算與最終審核 (已加入課程費用欄位) ---
         function renderAdminDash() {
             const spent = DB.registrations.filter(r => r.adminStatus === '已完成報名').reduce((sum, r) => sum + r.feeNum, 0);
             document.getElementById('admin-spent').innerText = spent.toLocaleString() + ' 元';
@@ -839,15 +857,16 @@
 
             const tbody = document.getElementById('admin-tbody');
             if (DB.registrations.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="4" class="p-8 text-center text-gray-500">目前無任何報名案件</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="5" class="p-8 text-center text-gray-500">目前無任何報名案件</td></tr>';
                 return;
             }
 
             tbody.innerHTML = DB.registrations.map(r => `
                 <tr class="hover:bg-gray-50 border-b">
                     <td class="p-4"><p class="font-bold">${r.userName}</p><p class="text-xs text-gray-500">${r.branch}</p></td>
-                    <td class="p-4 text-gray-700">${r.title}</td>
-                    <td class="p-4"><span class="px-2 py-1 rounded text-xs font-bold ${r.branchStatus==='分署同意'?'bg-green-100 text-green-800':'bg-yellow-100 text-yellow-800'}">${r.branchStatus}</span></td>
+                    <td class="p-4 text-gray-700 font-medium">${r.title}</td>
+                    <td class="p-4 text-red-600 font-bold">${r.adminFee || '免費'}</td>
+                    <td class="p-4"><span class="px-2.5 py-1 rounded text-xs font-bold ${r.branchStatus==='分署同意'?'bg-green-100 text-green-800':'bg-yellow-100 text-yellow-800'}">${r.branchStatus}</span></td>
                     <td class="p-4">
                         ${r.branchStatus !== '分署同意' ? '<span class="text-xs text-gray-400 font-medium">等待分署同意中</span>' : `
                             <select onchange="updateAdminStatus(${r.id}, this)" class="border p-1 rounded font-bold text-sm ${r.adminStatus==='已完成報名'?'text-green-700':'text-orange-700'}">
@@ -876,7 +895,6 @@
             renderAdminDash();
         }
 
-        // 啟動時自動讀取雲端預設 Excel
         autoLoadMasterExcel();
     </script>
 </body>
