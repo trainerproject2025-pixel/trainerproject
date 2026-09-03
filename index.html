@@ -51,7 +51,7 @@
                     <a href="#" id="tab-profile" onclick="switchPage('page-profile')" class="hover:text-blue-200">個人資料</a>
                 </nav>
                 <nav id="nav-branch" class="hidden gap-6 text-sm">
-                    <a href="#" class="tab-active">分署審核與管理</a>
+                    <a href="#" id="tab-branch-dash" onclick="switchPage('page-branch-dash')" class="tab-active">分署審核與管理</a>
                 </nav>
                 <nav id="nav-admin" class="hidden gap-6 text-sm">
                     <a href="#" id="tab-admin-dash" onclick="switchPage('page-admin-dash')" class="hover:text-blue-200">預算與最終審核</a>
@@ -68,7 +68,7 @@
         <!-- 內容顯示區 -->
         <main class="flex-1 overflow-y-auto p-4 md:p-8">
             
-            <!-- 【訓練師】課程列表頁 (卡片無金額、無外連按鈕) -->
+            <!-- 【訓練師】課程列表頁 -->
             <div id="page-courses" class="hidden-view max-w-7xl mx-auto">
                 <div class="flex flex-col md:flex-row justify-between items-start md:items-end mb-6 gap-4">
                     <h2 class="text-2xl font-bold text-gray-800 border-l-4 border-[#003D79] pl-3">進修課程公告總覽</h2>
@@ -77,15 +77,15 @@
                 <div id="course-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"></div>
             </div>
 
-            <!-- 【訓練師】課程詳細資訊頁 (超連結支援、金額在左、費用說明在右) -->
+            <!-- 課程詳細資訊頁 (支援訓練師與分署窗口查看) -->
             <div id="page-detail" class="hidden-view max-w-5xl mx-auto">
-                <button onclick="switchPage('page-courses')" class="text-[#003D79] font-bold mb-4 hover:underline">← 返回課程總覽</button>
+                <button id="detail-back-btn" onclick="goBackFromDetail()" class="text-[#003D79] font-bold mb-4 hover:underline">← 返回課程總覽</button>
                 <div class="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
                     <div class="bg-blue-50 p-6 border-b flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
                         <div>
                             <span id="detail-category" class="bg-blue-200 text-[#003D79] text-xs font-bold px-2 py-1 rounded mb-2 inline-block"></span>
                             
-                            <!-- 課程名稱與超連結跳轉按鈕 -->
+                            <!-- 課程名稱與外部跳轉按鈕 -->
                             <div class="flex flex-col sm:flex-row sm:items-center gap-3 mb-2">
                                 <a id="detail-title-link" href="#" target="_blank" rel="noopener noreferrer" class="text-2xl font-bold text-gray-800 transition">
                                     <span id="detail-title"></span>
@@ -97,7 +97,7 @@
 
                             <p id="detail-unit" class="text-gray-600 text-sm font-bold"></p>
                         </div>
-                        <button onclick="registerCourse()" class="w-full md:w-auto bg-[#003D79] text-white px-8 py-3 rounded-lg font-bold hover:bg-blue-800 shadow-md shrink-0">我要報名</button>
+                        <button id="detail-register-btn" onclick="registerCourse()" class="w-full md:w-auto bg-[#003D79] text-white px-8 py-3 rounded-lg font-bold hover:bg-blue-800 shadow-md shrink-0">我要報名</button>
                     </div>
                     
                     <div class="grid grid-cols-3 divide-x border-b bg-gray-50 text-sm">
@@ -153,7 +153,7 @@
                 </div>
             </div>
 
-            <!-- 【分署窗口】分署報名審核頁 (含管理員核定進度) -->
+            <!-- 【分署窗口】分署報名審核頁 (課程名稱支援點擊跳轉詳細頁) -->
             <div id="page-branch-dash" class="hidden-view max-w-6xl mx-auto">
                 <h2 class="text-2xl font-bold text-gray-800 border-l-4 border-green-600 pl-3 mb-6">分署報名審核與管理 (僅顯示：中彰投分署)</h2>
                 <div class="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
@@ -161,7 +161,7 @@
                         <thead class="bg-gray-100 text-gray-700">
                             <tr>
                                 <th class="p-4">訓練師姓名</th>
-                                <th class="p-4">報名課程</th>
+                                <th class="p-4">報名課程 (點擊看詳細)</th>
                                 <th class="p-4">報名日期</th>
                                 <th class="p-4">分署審核決議</th>
                                 <th class="p-4">管理員核定進度</th>
@@ -231,6 +231,7 @@
             budget: 300000,
             currentUser: null,
             currentCourseId: null,
+            detailSourcePage: 'page-courses', // 記錄從哪一頁點進詳細頁面
             users: {
                 trainer: { id: 1, name: '王大明', role: 'trainer', branch: '中彰投分署' },
                 branch: { id: 2, name: '中彰投窗口', role: 'branch', branch: '中彰投分署' },
@@ -333,9 +334,10 @@
             document.getElementById(pageId).classList.remove('hidden-view');
 
             document.querySelectorAll('nav a').forEach(el => el.classList.remove('tab-active'));
-            if(pageId === 'page-courses' || pageId === 'page-detail') document.getElementById('tab-courses')?.classList.add('tab-active');
+            if(pageId === 'page-courses') document.getElementById('tab-courses')?.classList.add('tab-active');
             if(pageId === 'page-records') document.getElementById('tab-records')?.classList.add('tab-active');
             if(pageId === 'page-profile') document.getElementById('tab-profile')?.classList.add('tab-active');
+            if(pageId === 'page-branch-dash') document.getElementById('tab-branch-dash')?.classList.add('tab-active');
             if(pageId === 'page-admin-dash') document.getElementById('tab-admin-dash')?.classList.add('tab-active');
             if(pageId === 'page-admin-courses') document.getElementById('tab-admin-courses')?.classList.add('tab-active');
 
@@ -560,11 +562,10 @@
             reader.readAsArrayBuffer(file);
         }
 
-        // --- 自動從 GitHub 讀取預設 Excel (任何人開啟網頁自動執行) ---
+        // --- 自動從 GitHub 讀取預設 Excel ---
         async function autoLoadMasterExcel() {
             loadFromStorage();
             
-            // 嘗試自動抓取 GitHub 上的 Excel 檔案
             const filesToTry = ['courses.xlsx', '115年第3次公開班課程清單v1_2.xlsx'];
             for (let fname of filesToTry) {
                 try {
@@ -577,11 +578,9 @@
                         return;
                     }
                 } catch(e) {
-                    // 繼續嘗試下一個檔名
                 }
             }
             
-            // 若雲端檔尚未上傳，則維持 LocalStorage
             if (DB.courses.length > 0) {
                 const statusEl = document.getElementById('upload-status');
                 if (statusEl) statusEl.innerText = `✅ 目前已有 ${DB.courses.length} 筆課程 (快取載入)`;
@@ -613,7 +612,7 @@
             `).join('');
         }
 
-        // --- 訓練師：課程公告總覽 (卡片乾淨無金額) ---
+        // --- 訓練師：課程公告總覽 ---
         function renderCourseGrid() {
             document.getElementById('course-count-display').innerText = `目前共有 ${DB.courses.length} 堂課程開放報名`;
             const grid = document.getElementById('course-grid');
@@ -635,16 +634,37 @@
                         <p>📅 ${c.date}</p>
                         <p class="leading-relaxed">📍 ${c.location}</p>
                     </div>
-                    <button onclick="jumpToDetail(${c.id})" class="mt-auto w-full bg-blue-50 text-[#003D79] border border-[#003D79] py-2 rounded text-sm font-bold hover:bg-[#003D79] hover:text-white transition">查看課程資訊</button>
+                    <button onclick="jumpToDetail(${c.id}, 'page-courses')" class="mt-auto w-full bg-blue-50 text-[#003D79] border border-[#003D79] py-2 rounded text-sm font-bold hover:bg-[#003D79] hover:text-white transition">查看課程資訊</button>
                 </div>
             `).join('');
         }
 
-        // --- 訓練師：詳細頁面跳轉 ---
-        function jumpToDetail(courseId) {
+        // --- 詳細頁面跳轉 (支援從不同頁面進入與返回) ---
+        function jumpToDetail(courseId, fromPage = 'page-courses') {
             const c = DB.courses.find(x => x.id === courseId);
+            if (!c) {
+                alert("找不到該課程的詳細資料！");
+                return;
+            }
             DB.currentCourseId = courseId;
+            DB.detailSourcePage = fromPage;
             
+            // 調整返回按鈕文字
+            const backBtn = document.getElementById('detail-back-btn');
+            if (fromPage === 'page-branch-dash') {
+                backBtn.innerText = '← 返回分署審核管理';
+            } else {
+                backBtn.innerText = '← 返回課程總覽';
+            }
+
+            // 權限控制：分署窗口純檢視，隱藏報名按鈕
+            const regBtn = document.getElementById('detail-register-btn');
+            if (DB.currentUser && DB.currentUser.role === 'branch') {
+                regBtn.classList.add('hidden');
+            } else {
+                regBtn.classList.remove('hidden');
+            }
+
             const titleEl = document.getElementById('detail-title');
             const titleLink = document.getElementById('detail-title-link');
             const linkBtn = document.getElementById('detail-link-btn');
@@ -684,6 +704,11 @@
             document.getElementById('detail-fee-desc').innerText = c.feeText || '依簡章說明';
             
             switchPage('page-detail');
+        }
+
+        // --- 從詳細頁面智慧返回 ---
+        function goBackFromDetail() {
+            switchPage(DB.detailSourcePage || 'page-courses');
         }
 
         function registerCourse() {
@@ -749,6 +774,7 @@
             }).join('');
         }
 
+        // --- 分署窗口端：支援點擊課程名稱看詳細資訊 ---
         function renderBranchDash() {
             const branchRegs = DB.registrations.filter(r => r.branch === DB.currentUser.branch);
             const tbody = document.getElementById('branch-tbody');
@@ -773,7 +799,12 @@
                 return `
                     <tr class="hover:bg-gray-50 border-b">
                         <td class="p-4 font-bold text-gray-800">${r.userName}</td>
-                        <td class="p-4 text-gray-700">${r.title}</td>
+                        <td class="p-4">
+                            <button onclick="jumpToDetail(${r.courseId}, 'page-branch-dash')" class="text-left font-bold text-[#003D79] hover:text-blue-600 hover:underline flex items-center gap-1.5 group">
+                                <span>${r.title}</span>
+                                <span class="text-xs text-blue-500 opacity-70 group-hover:opacity-100">🔍</span>
+                            </button>
+                        </td>
                         <td class="p-4 text-sm text-gray-600">${r.date}</td>
                         <td class="p-4">
                             <select onchange="updateBranchStatus(${r.id}, this)" class="border p-1.5 rounded font-bold text-sm ${r.branchStatus==='分署同意'?'text-green-700':r.branchStatus==='分署不同意'?'text-red-700':'text-yellow-700'}">
